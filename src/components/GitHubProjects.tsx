@@ -3,13 +3,19 @@ import { getProjects } from "../services/github";
 
 export default function GitHubProjects() {
   const [repos, setRepos] = useState<any[]>([]);
+  const [error, setError] = useState(false);
 
-useEffect(() => {
-  getProjects().then((data) => {
-    console.log("GitHub Data:", data);
-    setRepos(data);
-  });
-}, []);
+  useEffect(() => {
+    getProjects()
+      .then((data) => {
+        console.log("GitHub Data:", data);
+        setRepos(data);
+      })
+      .catch((error) => {
+        console.error("GitHub Error:", error);
+        setError(true);
+      });
+  }, []);
 
   return (
     <section
@@ -21,36 +27,37 @@ useEffect(() => {
       </h2>
 
       <p className="text-gray-400 mb-12">
-        Live projects synchronized directly from GitHub.
+        Explore my latest software engineering, DevOps, cloud infrastructure,
+        automation, and open-source projects.
       </p>
+
+      {error && (
+        <p className="text-center text-red-400 mb-8">
+          Unable to load GitHub repositories.
+        </p>
+      )}
 
       <div className="grid md:grid-cols-3 gap-8">
         {repos.map((repo) => (
           <div
             key={repo.id}
-            className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 hover:border-blue-500 transition"
+            className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 hover:border-green-500 transition"
           >
             <h3 className="text-2xl font-bold">
               {repo.name}
             </h3>
 
             <p className="text-gray-400 mt-4">
-              {repo.description ||
-                "No description available"}
+              {repo.description || "No description available"}
             </p>
 
             <div className="flex gap-4 mt-4">
-              <span>
-                ⭐ {repo.stargazers_count}
-              </span>
-
-              <span>
-                🍴 {repo.forks_count}
-              </span>
+              <span>⭐ {repo.stargazers_count}</span>
+              <span>🍴 {repo.forks_count}</span>
             </div>
 
             <div className="mt-4">
-              <span className="text-blue-400">
+              <span className="text-green-400">
                 {repo.language}
               </span>
             </div>
@@ -60,7 +67,7 @@ useEffect(() => {
                 href={repo.html_url}
                 target="_blank"
                 rel="noreferrer"
-                className="bg-blue-600 px-4 py-2 rounded-lg"
+                className="bg-green-600 px-4 py-2 rounded-lg"
               >
                 View Repository
               </a>
